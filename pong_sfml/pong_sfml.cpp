@@ -75,7 +75,7 @@ int main()
 
 	sf::RenderWindow window(sf::VideoMode(gameWidth, gameHeight, 32), "IA TEST",
 		sf::Style::Titlebar | sf::Style::Close);
-	window.setVerticalSyncEnabled(true);
+	window.setVerticalSyncEnabled(false);
 
 	leftPaddle.setSize(paddleSize - sf::Vector2f(3, 3));
 	leftPaddle.setOutlineThickness(3);
