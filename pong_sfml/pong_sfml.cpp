@@ -1,5 +1,6 @@
 // pong_sfml.cpp : Defines the entry point for the console application.
 //THIS PONG COMES FROM SFML_EXEMPLES
+//BUT YOLO!
 
 #include "stdafx.h"
 #include <SFML/Graphics.hpp>
