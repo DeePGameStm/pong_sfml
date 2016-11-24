@@ -18,9 +18,9 @@ float ballRadius = 10.f;
 sf::RectangleShape leftPaddle;
 sf::RectangleShape rightPaddle;
 
-const float paddleSpeed = 400.f;
+const float paddleSpeed =6.f;
 float rightPaddleSpeed = 0.f;
-const float ballSpeed = 400.f;
+const float ballSpeed = 6.f;
 
 float deltaTime;
 
@@ -75,7 +75,7 @@ int main()
 
 	sf::RenderWindow window(sf::VideoMode(gameWidth, gameHeight, 32), "IA TEST",
 		sf::Style::Titlebar | sf::Style::Close);
-	window.setVerticalSyncEnabled(true);
+	window.setVerticalSyncEnabled(false);
 
 	leftPaddle.setSize(paddleSize - sf::Vector2f(3, 3));
 	leftPaddle.setOutlineThickness(3);
@@ -98,7 +98,7 @@ int main()
 	restart(&clock, &timer);
 	while (window.isOpen())
 	{
-		//sf::sleep(sf::milliseconds(10)); //NE SERT A RIEN PUT***!
+		//sf::sleep(sf::milliseconds(10));
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
@@ -115,6 +115,7 @@ int main()
 			{
 				restart(&clock, &timer);
 			}
+			//sf::sleep(sf::milliseconds(1));
 		}
 
 		if (isPlaying)
@@ -140,23 +141,23 @@ int main()
 
 			deltaTime = clock.restart().asSeconds();
 			// Move the player's paddle
-			/*if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
 			{
-				moveUp(0);
+				moveUp(1);
 			}
 
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
 			{
-				moveDown(0);
-			}*/
-			genom[genom.size() - 1].update();
+				moveDown(1);
+			}
+			//genom[genom.size() - 1].update();
 			//cout << "ADN: " << genom[genom.size() - 1].returnADN() << endl;
 
 			// Move the computer's paddle
 			if (((rightPaddleSpeed < 0.f) && (rightPaddle.getPosition().y - paddleSize.y / 2 > 5.f)) ||
 				((rightPaddleSpeed > 0.f) && (rightPaddle.getPosition().y + paddleSize.y / 2 < gameHeight - 5.f)))
 			{
-				rightPaddle.move(0.f, rightPaddleSpeed * deltaTime);
+				rightPaddle.move(0.f, rightPaddleSpeed);
 			}
 
 			// Update the computer's paddle direction according to the ball position
@@ -172,7 +173,7 @@ int main()
 			}
 
 			// Move the ball
-			float factor = ballSpeed * deltaTime;
+			float factor = ballSpeed;
 			ball.move(std::cos(ballAngle) * factor, std::sin(ballAngle) * factor);
 
 			// Check collisions between the ball and the screen
@@ -337,7 +338,7 @@ void moveUp(int work)
 	if (work > 0) {
 		if (leftPaddle.getPosition().y - paddleSize.y / 2 > 5.f)
 		{
-			leftPaddle.move(0.f, -paddleSpeed * deltaTime);
+			leftPaddle.move(0.f, -paddleSpeed);
 		}
 	}
 }
@@ -348,7 +349,7 @@ void moveDown(int work)
 	{
 		if (leftPaddle.getPosition().y + paddleSize.y / 2 < gameHeight - 5.f)
 		{
-			leftPaddle.move(0.f, paddleSpeed * deltaTime);
+			leftPaddle.move(0.f, paddleSpeed);
 		}
 	}
 }
