@@ -64,7 +64,8 @@ int main()
 	vector<IA> generations;
 	generations.push_back(Lia);
 
-
+	bool AiWin;
+	bool gameStop = false;
 
 
 	sf::Clock clock;
@@ -121,6 +122,7 @@ int main()
 
 			if (firstGen)
 			{
+				cout << "NEWGEN" << endl;
 				tempIa = new IA(generations[generations.size() - 1].returnADN());
 				tempIa->mutate();
 
@@ -177,11 +179,15 @@ int main()
 			if (ball.getPosition().x - ballRadius < 0.f)
 			{
 				isPlaying = false;
+				AiWin = false;
+				gameStop = true;
 				//pauseMessage.setString("You lost!\nPress space to restart or\nescape to exit");
 			}
 			if (ball.getPosition().x + ballRadius > gameWidth)
 			{
 				isPlaying = false;
+				AiWin = true;
+				gameStop = true;
 				//pauseMessage.setString("You won!\nPress space to restart or\nescape to exit");
 			}
 			if (ball.getPosition().y - ballRadius < 0.f)
@@ -223,6 +229,24 @@ int main()
 
 				ball.setPosition(rightPaddle.getPosition().x - ballRadius - paddleSize.x / 2 - 0.1f, ball.getPosition().y);
 			}
+
+			if (gameStop)
+			{
+				tempIa = new IA(generations[generations.size() - 1].returnADN());
+				tempIa->mutate();
+
+				genom.push_back(IA(tempIa->returnADN()));
+				genom[genom.size() - 1].addOutput(&moveUp);
+				genom[genom.size() - 1].addOutput(&moveDown);
+				genom[genom.size() - 1].addInput(&ballPosY, 0);
+				genom[genom.size() - 1].addInput(&ballPosX, 1);
+				score.push_back(0);
+				delete tempIa;
+				tempIa = 0;
+
+				wow = false;
+				gameStop = false;
+			}
 		}
 
 		window.clear(sf::Color(50, 200, 50));
@@ -235,7 +259,11 @@ int main()
 		}
 		else //PERDU! / FIN DE GAME
 		{
-			score[score.size() - 1] = timer.getElapsedTime().asSeconds();
+			if (!AiWin)
+				score[score.size() - 1] = timer.getElapsedTime().asSeconds();
+			else
+				score[score.size() - 1] = 999999;
+
 			if (genom.size() > 11)
 			{
 				scoreTemp1 = -1; scoreTemp2 = -1;
@@ -285,23 +313,12 @@ int main()
 
 				}
 					//break;
+				firstGen = true;
 				restart(&clock, &timer);
 			}
 			else
 			{
-				tempIa = new IA(generations[generations.size() - 1].returnADN());
-				tempIa->mutate();
-
-				genom.push_back(IA(tempIa->returnADN()));
-				genom[genom.size() - 1].addOutput(&moveUp);
-				genom[genom.size() - 1].addOutput(&moveDown);
-				genom[genom.size() - 1].addInput(&ballPosY, 0);
-				genom[genom.size() - 1].addInput(&ballPosX, 1);
-				score.push_back(0);
-				delete tempIa;
-				tempIa = 0;
-
-				wow = false;
+				restart(&clock, &timer);
 			}
 
 		}
@@ -339,7 +356,6 @@ void restart(sf::Clock *clock, sf::Clock *timer)
 	isPlaying = true;
 	clock->restart();
 	timer->restart();
-	firstGen = true;
 
 	// Reset the position of the paddles and ball
 	leftPaddle.setPosition(10 + paddleSize.x / 2, gameHeight / 2);
@@ -352,4 +368,5 @@ void restart(sf::Clock *clock, sf::Clock *timer)
 		// Make sure the ball initial angle is not too much vertical
 		ballAngle = (std::rand() % 360) * 2 * pi / 360;
 	} while (std::abs(std::cos(ballAngle)) < 0.7f);
+	ballAngle = 215 * 2 * pi / 360;
 }
