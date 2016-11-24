@@ -150,7 +150,7 @@ int main()
 				moveDown(0);
 			}*/
 			genom[genom.size() - 1].update();
-			cout << "ADN: " << genom[genom.size() - 1].returnADN() << endl;
+			//cout << "ADN: " << genom[genom.size() - 1].returnADN() << endl;
 
 			// Move the computer's paddle
 			if (((rightPaddleSpeed < 0.f) && (rightPaddle.getPosition().y - paddleSize.y / 2 > 5.f)) ||
@@ -259,10 +259,9 @@ int main()
 		}
 		else //PERDU! / FIN DE GAME
 		{
-			if (!AiWin)
-				score[score.size() - 1] = timer.getElapsedTime().asSeconds();
-			else
-				score[score.size() - 1] = 999999;
+			score[score.size() - 1] = timer.getElapsedTime().asSeconds();
+			if(AiWin)
+				score[score.size() - 1] += 999999;
 
 			if (genom.size() > 11)
 			{
@@ -296,12 +295,16 @@ int main()
 					wow = true;
 				}
 
+				cout << "Best ADN1: " << genom[scoreTemp1Case - 1].returnADN() << endl << "Best ADN2: " << genom[scoreTemp2Case - 1].returnADN() << endl << endl;
+				cout << "Best temps1: " << scoreTemp1 << endl << "Best temps2: " << scoreTemp2 << endl;
+
 				//fusion
 				//cout << "fusion!" << endl;
 				generations.clear();
-				generations.push_back(IA(Lia.fusion(genom[scoreTemp1Case].returnADN(), genom[scoreTemp2Case].returnADN())));
+				generations.push_back(IA(Lia.fusion(genom[scoreTemp1Case - 1].returnADN(), genom[scoreTemp2Case - 1].returnADN())));
 				genom.clear();
 				score.clear();
+				cout << "result: " << generations[generations.size() - 1].returnADN() << endl << endl;
 
 				if (wow)
 				{
@@ -368,5 +371,5 @@ void restart(sf::Clock *clock, sf::Clock *timer)
 		// Make sure the ball initial angle is not too much vertical
 		ballAngle = (std::rand() % 360) * 2 * pi / 360;
 	} while (std::abs(std::cos(ballAngle)) < 0.7f);
-	ballAngle = 215 * 2 * pi / 360;
+	//ballAngle = 215 * 2 * pi / 360;
 }
