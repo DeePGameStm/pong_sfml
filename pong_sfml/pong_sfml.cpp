@@ -18,7 +18,7 @@ float ballRadius = 10.f;
 sf::RectangleShape leftPaddle;
 sf::RectangleShape rightPaddle;
 
-const float paddleSpeed =6.f;
+const float paddleSpeed = 8.f;
 float rightPaddleSpeed = 0.f;
 const float ballSpeed = 6.f;
 
@@ -75,7 +75,9 @@ int main()
 
 	sf::RenderWindow window(sf::VideoMode(gameWidth, gameHeight, 32), "IA TEST",
 		sf::Style::Titlebar | sf::Style::Close);
-	window.setVerticalSyncEnabled(false);
+
+	bool vsync = true;
+	window.setVerticalSyncEnabled(vsync);
 
 	leftPaddle.setSize(paddleSize - sf::Vector2f(3, 3));
 	leftPaddle.setOutlineThickness(3);
@@ -116,6 +118,14 @@ int main()
 				restart(&clock, &timer);
 			}
 			//sf::sleep(sf::milliseconds(1));
+			if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::V))
+			{
+				if (vsync)
+					vsync = false;
+				else
+					vsync = true;
+				window.setVerticalSyncEnabled(vsync);
+			}
 		}
 
 		if (isPlaying)
@@ -141,7 +151,7 @@ int main()
 
 			deltaTime = clock.restart().asSeconds();
 			// Move the player's paddle
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+			/*if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
 			{
 				moveUp(1);
 			}
@@ -149,8 +159,8 @@ int main()
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
 			{
 				moveDown(1);
-			}
-			//genom[genom.size() - 1].update();
+			}*/
+			genom[genom.size() - 1].update();
 			//cout << "ADN: " << genom[genom.size() - 1].returnADN() << endl;
 
 			// Move the computer's paddle
@@ -161,7 +171,7 @@ int main()
 			}
 
 			// Update the computer's paddle direction according to the ball position
-			if (AITimer.getElapsedTime() > AITime)
+			if (AITimer.getElapsedTime() > AITime || true)
 			{
 				AITimer.restart();
 				if (ball.getPosition().y + ballRadius > rightPaddle.getPosition().y + paddleSize.y / 2)
@@ -215,6 +225,7 @@ int main()
 					ballAngle = pi - ballAngle - (std::rand() % 20) * pi / 180;
 
 				ball.setPosition(leftPaddle.getPosition().x + ballRadius + paddleSize.x / 2 + 0.1f, ball.getPosition().y);
+				score[score.size() - 1]++;
 			}
 
 			// Right Paddle
@@ -250,19 +261,22 @@ int main()
 			}
 		}
 
-		window.clear(sf::Color(50, 200, 50));
+		if(vsync)
+			window.clear(sf::Color(50, 200, 50));
 
 		if (isPlaying)
 		{
-			window.draw(leftPaddle);
-			window.draw(rightPaddle);
-			window.draw(ball);
+			if (vsync) {
+				window.draw(leftPaddle);
+				window.draw(rightPaddle);
+				window.draw(ball);
+			}
 		}
 		else //PERDU! / FIN DE GAME
 		{
-			score[score.size() - 1] = timer.getElapsedTime().asSeconds();
+			//score[score.size() - 1] = timer.getElapsedTime().asSeconds();
 			if(AiWin)
-				score[score.size() - 1] += 999999;
+				score[score.size() - 1] += 999;
 
 			if (genom.size() > 11)
 			{
@@ -296,6 +310,11 @@ int main()
 					wow = true;
 				}
 
+				if (scoreTemp1Case == 0)
+					scoreTemp1Case++;
+				if (scoreTemp2Case == 0)
+					scoreTemp2Case++;
+
 				cout << "Best ADN1: " << genom[scoreTemp1Case - 1].returnADN() << endl << "Best ADN2: " << genom[scoreTemp2Case - 1].returnADN() << endl << endl;
 				cout << "Best temps1: " << scoreTemp1 << endl << "Best temps2: " << scoreTemp2 << endl;
 
@@ -327,7 +346,8 @@ int main()
 
 		}
 
-		window.display();
+		if(vsync)
+			window.display();
 	}
 
 	return 0;
