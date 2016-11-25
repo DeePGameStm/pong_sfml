@@ -94,6 +94,8 @@ int main()
 	ball.setOutlineColor(sf::Color::Black);
 	ball.setFillColor(sf::Color::White);
 	ball.setOrigin(ballRadius / 2, ballRadius / 2);
+	
+	int resultY;
 
 	restart(&clock, &timer);
 	while (window.isOpen())
@@ -149,6 +151,10 @@ int main()
 			{
 				moveDown(0);
 			}*/
+			resultY = leftPaddle.getPosition().y - ball.getPosition().y;
+			resultY = -resultY;
+			ballPosY = resultY;
+			ballPosX;
 			genom[genom.size() - 1].update();
 			//cout << "ADN: " << genom[genom.size() - 1].returnADN() << endl;
 
