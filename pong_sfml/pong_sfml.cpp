@@ -44,8 +44,11 @@ bool vsync = true;
 int main()
 {
 	int nbGeneration = 0;
-
-	std::string neuronBase = "0:2!0,3,1,2|0:7!0,3,2|0:3!0|1:0!1|1:6!0,1|1:1!1|1:2!0,1|2:10!0|2:10!0|"; //0:0!0|0:0!0|1:0!0|2:10!0|2:10!0|
+	std::cout << "neuronBase (enter = default): ";
+	std::string neuronBase;
+	getline(cin, neuronBase);
+	if(neuronBase.size() < 3)
+		neuronBase = "0:0!0|0:0!0|1:0!0|2:10!0|2:10!0|"; //0:0!0|0:0!0|1:0!0|2:10!0|2:10!0|
 	IA Lia(neuronBase);
 	Lia.addOutput(&moveUp);
 	Lia.addOutput(&moveDown);
@@ -75,6 +78,7 @@ int main()
 	sf::Clock timer;
 
 	std::srand(static_cast<unsigned int>(std::time(NULL)));
+	bool botControlled = false;
 
 	sf::RenderWindow window(sf::VideoMode(gameWidth, gameHeight, 32), "IA TEST",
 		sf::Style::Titlebar | sf::Style::Close);
@@ -128,6 +132,14 @@ int main()
 					vsync = true;
 				window.setVerticalSyncEnabled(vsync);
 			}
+
+			if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::C))
+			{
+				if (botControlled)
+					botControlled = false;
+				else
+					botControlled = true;
+			}
 		}
 
 		if (isPlaying)
@@ -167,23 +179,44 @@ int main()
 			genom[genom.size() - 1].update();
 			//cout << "ADN: " << genom[genom.size() - 1].returnADN() << endl;
 
-			// Move the computer's paddle
-			if (((rightPaddleSpeed < 0.f) && (rightPaddle.getPosition().y - paddleSize.y / 2 > 5.f)) ||
-				((rightPaddleSpeed > 0.f) && (rightPaddle.getPosition().y + paddleSize.y / 2 < gameHeight - 5.f)))
-			{
-				rightPaddle.move(0.f, rightPaddleSpeed);
-			}
+			if (!botControlled) {
+				// Move the computer's paddle
+				if (((rightPaddleSpeed < 0.f) && (rightPaddle.getPosition().y - paddleSize.y / 2 > 5.f)) ||
+					((rightPaddleSpeed > 0.f) && (rightPaddle.getPosition().y + paddleSize.y / 2 < gameHeight - 5.f)))
+				{
+					rightPaddle.move(0.f, rightPaddleSpeed);
+				}
 
-			// Update the computer's paddle direction according to the ball position
-			if (AITimer.getElapsedTime() > AITime || true)
+				// Update the computer's paddle direction according to the ball position
+				if (AITimer.getElapsedTime() > AITime || true)
+				{
+					AITimer.restart();
+					if (ball.getPosition().y + ballRadius > rightPaddle.getPosition().y + paddleSize.y / 2)
+						rightPaddleSpeed = paddleSpeed;
+					else if (ball.getPosition().y - ballRadius < rightPaddle.getPosition().y - paddleSize.y / 2)
+						rightPaddleSpeed = -paddleSpeed;
+					else
+						rightPaddleSpeed = 0.f;
+				}
+			}
+			else
 			{
-				AITimer.restart();
-				if (ball.getPosition().y + ballRadius > rightPaddle.getPosition().y + paddleSize.y / 2)
-					rightPaddleSpeed = paddleSpeed;
-				else if (ball.getPosition().y - ballRadius < rightPaddle.getPosition().y - paddleSize.y / 2)
-					rightPaddleSpeed = -paddleSpeed;
-				else
-					rightPaddleSpeed = 0.f;
+
+				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+				{
+					if (rightPaddle.getPosition().y - paddleSize.y / 2 > 5.f)
+					{
+						rightPaddle.move(0.f, -paddleSpeed);
+					}
+				}
+
+				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+				{
+					if (rightPaddle.getPosition().y + paddleSize.y / 2 < gameHeight - 5.f)
+					{
+						rightPaddle.move(0.f, paddleSpeed);
+					}
+				}
 			}
 
 			// Move the ball
@@ -405,5 +438,8 @@ void restart(sf::Clock *clock, sf::Clock *timer)
 		// Make sure the ball initial angle is not too much vertical
 		ballAngle = (std::rand() % 360) * 2 * pi / 360;
 	} while (std::abs(std::cos(ballAngle)) < 0.7f);
-	ballAngle = 147 * 2 * pi / 360;
+	//if((rand() % 2) == 1)
+		ballAngle = 147 * 2 * pi / 360;
+	//else
+		//ballAngle = 215 * 2 * pi / 360;
 }
